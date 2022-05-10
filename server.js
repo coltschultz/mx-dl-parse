@@ -6,6 +6,10 @@ const pdf = require('pdf-parse');
 const PORT = process.env.PORT || 3010;
 const app = express();
 
+app.use(express.static('public'));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
 // pdf-parse package code here
 
 function getEntirePage() {
