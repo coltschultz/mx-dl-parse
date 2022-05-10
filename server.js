@@ -1,6 +1,6 @@
 const express = require('express');
 const fs = require('fs');
-const pdfParse = require('pdf-parse');
+const pdf = require('pdf-parse');
 const formidable = require('formidable');
 const path = require('path');
 var http = require('http');
@@ -81,17 +81,25 @@ http.createServer(function (req, res) {
     var form = new formidable.IncomingForm();
     form.parse(req, function (err, fields, files) {
       var oldpath = files.filetoupload.filepath;
-
-      var myPath = files.filetoupload.filepath + '/' + files.filetoupload.originalFilename;
+      var newpath = './newfile';
+      var rawData = fs.readFileSync(oldpath);
+      var myPath = files.filetoupload.filepath + '\\' + files.filetoupload.originalFilename;
       let regex = /\/\//g;
       var path = myPath.replace(regex, "/");
-      getEntirePage(path);
+      fs.rename(oldpath, newpath, function (err) {
+        if (err) throw err;
+        res.write('File uploaded and moved!');
+        res.end();
+      });
+      getEntirePage(newpath);
+      // console.log(req.headers);
+      // console.log(fields);
+      // console.log(files);
+      console.log(path);
+      // getEntirePage(rawData);
+      // console.log(files.filetoupload);
       // var newpath = 'C:/' + files.filetoupload.originalFilename;
-      // fs.rename(oldpath, newpath, function (err) {
-      //   if (err) throw err;
-      //   res.write('File uploaded and moved!');
-      //   res.end();
-      // });
+
  });
   } else {
     res.writeHead(200, {'Content-Type': 'text/html'});
