@@ -11,6 +11,30 @@
 </head>
 
 <body>
+  <header class="py-3 mb-3">
+    <div class="flex-row justify-space-between align-center container-fluid mx-auto">
+      <h1 class="text-light bg-dark p-3">PDF Parse</h1>
+      <h3 class="text-light bg-dark p-3">By Colt</h3>
+    </div>
+  </header>
+
+  <main class="container-fluid mx-auto">
+
+      <div class="col-12 col-lg-6 bg-dark p-3 mb-3">
+        <h3 class="text-light">Upload a License</h3>
+        <form action="fileupload" method="post" enctype="multipart/form-data" id="license-form">
+          <label for="license-name" class="form-label">File Upload:</label>
+          <input type="file" id="license-file" class="form-input input" placeholder="Upload PDF"
+            name="license-file">
+
+          <input type="submit" id="submit">
+        </form>
+      </div>
+
+    </section>
+
+
+  </main>
 
   <script src="./assets/js/script.js"></script>
 </body>

@@ -1,6 +1,9 @@
 const express = require('express');
 const fs = require('fs');
-const pdf = require('pdf-parse');
+const pdfParse = require('pdf-parse');
+const formidable = require('formidable');
+const path = require('path');
+var http = require('http');
 
 
 const PORT = process.env.PORT || 3010;
@@ -49,7 +52,12 @@ function getEntirePage() {
   });
 }
 
-getEntirePage();
+// getEntirePage();
+
+// Front End
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, './public/index.html'));
+});
 
 
 // API
@@ -63,6 +71,29 @@ getEntirePage();
 
 
 // Start the server
-app.listen(PORT, () => {
-  console.log(`Server now listening on port ${PORT}!`);
-});
+// app.listen(PORT, () => {
+//   console.log(`Server now listening on port ${PORT}!`);
+// });
+
+
+http.createServer(function (req, res) {
+  if (req.url == '/fileupload') {
+    var form = new formidable.IncomingForm();
+    form.parse(req, function (err, fields, files) {
+      var oldpath = files.filetoupload.filepath;
+      var newpath = 'C:/' + files.filetoupload.originalFilename;
+      fs.rename(oldpath, newpath, function (err) {
+        if (err) throw err;
+        res.write('File uploaded and moved!');
+        res.end();
+      });
+ });
+  } else {
+    res.writeHead(200, {'Content-Type': 'text/html'});
+    res.write('<form action="fileupload" method="post" enctype="multipart/form-data">');
+    res.write('<input type="file" name="filetoupload"><br>');
+    res.write('<input type="submit">');
+    res.write('</form>');
+    return res.end();
+  }
+}).listen(PORT);
