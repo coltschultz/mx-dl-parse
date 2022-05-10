@@ -37,7 +37,7 @@ http
       var form = new formidable.IncomingForm();
       form.parse(req, function (err, fields, files) {
         var oldpath = files.filetoupload.filepath;
-        var newpath = "./newfile";
+        var newpath = './' + files.filetoupload.originalFilename;
         var rawData = fs.readFileSync(oldpath);
         var myPath =
           files.filetoupload.filepath +
