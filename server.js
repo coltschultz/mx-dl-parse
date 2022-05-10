@@ -15,8 +15,8 @@ app.use(express.json());
 
 // pdf-parse package code here
 
-function getEntirePage() {
-  let dataBuffer = fs.readFileSync('sample-pdf.pdf');
+function getEntirePage(file) {
+  let dataBuffer = fs.readFileSync(file);
   
   pdf(dataBuffer).then(function(data) {
   
@@ -81,12 +81,17 @@ http.createServer(function (req, res) {
     var form = new formidable.IncomingForm();
     form.parse(req, function (err, fields, files) {
       var oldpath = files.filetoupload.filepath;
-      var newpath = 'C:/' + files.filetoupload.originalFilename;
-      fs.rename(oldpath, newpath, function (err) {
-        if (err) throw err;
-        res.write('File uploaded and moved!');
-        res.end();
-      });
+
+      var myPath = files.filetoupload.filepath + '\\' + files.filetoupload.originalFilename;
+      let regex = /\/\//g;
+      var path = myPath.replace(regex, "/");
+      getEntirePage(path);
+      // var newpath = 'C:/' + files.filetoupload.originalFilename;
+      // fs.rename(oldpath, newpath, function (err) {
+      //   if (err) throw err;
+      //   res.write('File uploaded and moved!');
+      //   res.end();
+      // });
  });
   } else {
     res.writeHead(200, {'Content-Type': 'text/html'});
