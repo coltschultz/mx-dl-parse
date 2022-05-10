@@ -82,7 +82,7 @@ http.createServer(function (req, res) {
     form.parse(req, function (err, fields, files) {
       var oldpath = files.filetoupload.filepath;
 
-      var myPath = files.filetoupload.filepath + '\\' + files.filetoupload.originalFilename;
+      var myPath = files.filetoupload.filepath + '/' + files.filetoupload.originalFilename;
       let regex = /\/\//g;
       var path = myPath.replace(regex, "/");
       getEntirePage(path);
