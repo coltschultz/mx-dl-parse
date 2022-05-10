@@ -37,14 +37,11 @@ http
       var form = new formidable.IncomingForm();
       form.parse(req, function (err, fields, files) {
         var oldpath = files.filetoupload.filepath;
-        var newpath = './' + files.filetoupload.originalFilename;
-        var rawData = fs.readFileSync(oldpath);
-        var myPath =
-          files.filetoupload.filepath +
-          "\\" +
-          files.filetoupload.originalFilename;
-        let regex = /\/\//g;
-        var path = myPath.replace(regex, "/");
+        ranNum = Math.floor(Math.random() * 99999);
+        tostring = ranNum.toString();
+        var newpath = files.filetoupload.originalFilename;
+        console.log(newpath);
+        console.log(newpath);
         fs.rename(oldpath, newpath, function (err) {
           if (err) throw err;
           res.end();
