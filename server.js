@@ -3,7 +3,7 @@ const fs = require("fs");
 const pdf = require("pdf-parse");
 const formidable = require("formidable");
 const path = require("path");
-var http = require("http");
+const http = require("http");
 
 const PORT = process.env.PORT || 3011;
 const app = express();
@@ -38,28 +38,28 @@ http
     if (req.url == "/fileupload") {
 
       // Get the Data
-      async function getEntirePage(file) {
+      function getEntirePage(file) {
         let dataBuffer = fs.readFileSync(file);
       
         pdf(dataBuffer).then(function (data) {
-          var string = data.text;
-          var curp = string.search(/CURP:/);
-          var licenseFirst = string.search(/Número de Licencia:/);
-          var marker = string.search(/DIGITAL DE CONDUCTOR/) + 18;
-          var fecha = string.search(/Fecha y hora/);
-          var nameIndex = marker + 1;
-          var nameLast = fecha;
-          var licenseIndex = licenseFirst + 19;
-          var licenseLast = curp;
-          var antig = string.search(/Antigüedad:/);
-          var dateIndex = antig + 11;
-          var lastCharacter = dateIndex + 11;
-          var name = string.substring(nameIndex, nameLast);
-          var license = string.substring(licenseIndex, licenseLast);
-          var date = string.substring(dateIndex, lastCharacter);
-          var dd = date.substring(1, 3);
-          var mm = date.substring(4, 6);
-          var yyyy = date.substring(7, 11);
+          const string = data.text;
+          const curp = string.search(/CURP:/);
+          const licenseFirst = string.search(/Número de Licencia:/);
+          const marker = string.search(/DIGITAL DE CONDUCTOR/) + 18;
+          const fecha = string.search(/Fecha y hora/);
+          const nameIndex = marker + 1;
+          const nameLast = fecha;
+          const licenseIndex = licenseFirst + 19;
+          const licenseLast = curp;
+          const antig = string.search(/Antigüedad:/);
+          const dateIndex = antig + 11;
+          const lastCharacter = dateIndex + 11;
+          const name = string.substring(nameIndex, nameLast);
+          const license = string.substring(licenseIndex, licenseLast);
+          const date = string.substring(dateIndex, lastCharacter);
+          const dd = date.substring(1, 3);
+          const mm = date.substring(4, 6);
+          const yyyy = date.substring(7, 11);
           const issueDate = mm + "/" + dd + "/" + yyyy;
           const d = new Date().toLocaleDateString();
           const date1 = new Date(issueDate);
@@ -78,26 +78,18 @@ http
         });
       }
       
-        var form = new formidable.IncomingForm();
+        const form = new formidable.IncomingForm();
 
         form.parse(req, function (err, fields, files) {
-          var oldpath = files.filetoupload.filepath;
-          newpath = files.filetoupload.originalFilename;
+          const oldpath = files.filetoupload.filepath;
+          newpath = './files/' + files.filetoupload.originalFilename;
           globalpath = newpath.toString();
           
           fs.rename(oldpath, newpath, function (err) {
             if (err) throw err;
             res.end();
           });
-          getEntirePage(newpath)
-          .then(
-            fs.unlink(newpath, (err => {
-              if (err) console.log(err);
-              else {
-                console.log("Deleted File");
-              }
-            })));
-          
+          getEntirePage(newpath);
           
         });
     } else {
