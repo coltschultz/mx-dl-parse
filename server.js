@@ -31,80 +31,66 @@ app.get("*", (req, res) => {
 //   console.log(`Server now listening on port ${PORT}!`);
 // });
 
+
+
 http
   .createServer(function (req, res) {
     if (req.url == "/fileupload") {
-      var form = new formidable.IncomingForm();
-      form.parse(req, function (err, fields, files) {
-        var oldpath = files.filetoupload.filepath;
-        ranNum = Math.floor(Math.random() * 99999);
-        tostring = ranNum.toString();
-        var newpath = files.filetoupload.originalFilename;
-        console.log(newpath);
-        console.log(newpath);
-        fs.rename(oldpath, newpath, function (err) {
-          if (err) throw err;
-          res.end();
+
+      // Get the Data
+      function getEntirePage(file) {
+        let dataBuffer = fs.readFileSync(file);
+      
+        pdf(dataBuffer).then(function (data) {
+          var string = data.text;
+          var curp = string.search(/CURP:/);
+          var licenseFirst = string.search(/Número de Licencia:/);
+          var marker = string.search(/DIGITAL DE CONDUCTOR/) + 18;
+          var fecha = string.search(/Fecha y hora/);
+          var nameIndex = marker + 1;
+          var nameLast = fecha;
+          var licenseIndex = licenseFirst + 19;
+          var licenseLast = curp;
+          var antig = string.search(/Antigüedad:/);
+          var dateIndex = antig + 11;
+          var lastCharacter = dateIndex + 11;
+          var name = string.substring(nameIndex, nameLast);
+          var license = string.substring(licenseIndex, licenseLast);
+          var date = string.substring(dateIndex, lastCharacter);
+          var dd = date.substring(1, 3);
+          var mm = date.substring(4, 6);
+          var yyyy = date.substring(7, 11);
+          const issueDate = mm + "/" + dd + "/" + yyyy;
+          const d = new Date().toLocaleDateString();
+          const date1 = new Date(issueDate);
+          const date2 = new Date(d);
+          const diffTime = Math.abs(date2 - date1);
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          const diffYears = Math.ceil(diffDays / 365);
+          res.writeHead(200, { "Content-Type": "text/html" });
+          res.write(`Name: ${name}`);
+          res.write("<br>");
+          res.write(`License Number: ${license}`);
+          res.write("<br>");
+          res.write(`Date Issued: ${issueDate}`);
+          res.write("<br>");
+          res.write(`Experience Shown: ${diffYears} years`);
         });
+      }
+      
+        var form = new formidable.IncomingForm();
 
-        function getEntirePage(file) {
-          let dataBuffer = fs.readFileSync(file);
-
-          pdf(dataBuffer).then(function (data) {
-            var string = data.text;
-            var curp = string.search(/CURP:/);
-            var licenseFirst = string.search(/Número de Licencia:/);
-            var marker = string.search(/DIGITAL DE CONDUCTOR/) + 18;
-            var fecha = string.search(/Fecha y hora/);
-            var nameIndex = marker + 1;
-            var nameLast = fecha;
-
-            var licenseIndex = licenseFirst + 19;
-            var licenseLast = curp;
-            var antig = string.search(/Antigüedad:/);
-            var dateIndex = antig + 11;
-            var lastCharacter = dateIndex + 11;
-            var name = string.substring(nameIndex, nameLast);
-            var license = string.substring(licenseIndex, licenseLast);
-            var date = string.substring(dateIndex, lastCharacter);
-            var dd = date.substring(1, 3);
-            var mm = date.substring(4, 6);
-            var yyyy = date.substring(7, 11);
-            const issueDate = mm + '/' + dd + '/' + yyyy;
-            console.log(string);
-            console.log(antig);
-            console.log(dateIndex);
-            console.log(lastCharacter);
-            console.log(date);
-            const d = new Date().toLocaleDateString();
-            
-            const date1 = new Date(issueDate);
-            const date2 = new Date(d);
-            const diffTime = Math.abs(date2 - date1);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            const diffYears = Math.ceil(diffDays / 365);
-            console.log(diffTime + " milliseconds");
-            console.log(diffDays + " days");
-            res.writeHead(200, { "Content-Type": "text/html" });
-            res.write(`Name: ${name}`);
-            res.write('<br>');
-            res.write(`License Number: ${license}`);
-            res.write('<br>');
-            res.write(`Date Issued: ${issueDate}`);
-            res.write('<br>');
-            res.write(`Experience Shown: ${diffYears} years`);
-
+        form.parse(req, function (err, fields, files) {
+          var oldpath = files.filetoupload.filepath;
+          newpath = files.filetoupload.originalFilename;
+          globalpath = newpath.toString();
+          
+          fs.rename(oldpath, newpath, function (err) {
+            if (err) throw err;
+            res.end();
           });
-        }
-        getEntirePage(newpath);
-        // console.log(req.headers);
-        // console.log(fields);
-        // console.log(files);
-        console.log(path);
-        // getEntirePage(rawData);
-        // console.log(files.filetoupload);
-        // var newpath = 'C:/' + files.filetoupload.originalFilename;
-      });
+          getEntirePage(newpath);
+        });
     } else {
       res.writeHead(200, { "Content-Type": "text/html" });
       res.write(
