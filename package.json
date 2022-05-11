@@ -5,7 +5,8 @@
   "main": "src/server.js",
   "scripts": {
     "test": "jest",
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "dev": "npx forever src/server.js"
   },
   "keywords": [],
   "author": "",
