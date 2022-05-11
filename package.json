@@ -2,10 +2,11 @@
   "name": "main",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "src/server.js",
   "scripts": {
     "test": "jest",
-    "start": "node server.js"
+    "start": "node src/server.js",
+    "dev": "npx forever src/server.js"
   },
   "keywords": [],
   "author": "",
@@ -13,6 +14,7 @@
   "dependencies": {
     "express": "^4.17.1",
     "formidable": "^2.0.1",
-    "pdf-parse": "^1.1.1"
+    "pdf-parse": "^1.1.1",
+    "pino": "^7.11.0"
   }
 }
