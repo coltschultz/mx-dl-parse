@@ -4,6 +4,7 @@ const pdf = require("pdf-parse");
 const formidable = require("formidable");
 const path = require("path");
 const http = require("http");
+const logger = require("pino")();
 
 const PORT = process.env.PORT || 3011;
 const app = express();
@@ -31,16 +32,13 @@ app.get("*", (req, res) => {
 //   console.log(`Server now listening on port ${PORT}!`);
 // });
 
-
-
 http
   .createServer(function (req, res) {
     if (req.url == "/fileupload") {
-
       // Get the Data
       function getEntirePage(file) {
         let dataBuffer = fs.readFileSync(file);
-      
+
         pdf(dataBuffer).then(function (data) {
           const string = data.text;
           const curp = string.search(/CURP:/);
@@ -77,20 +75,19 @@ http
           res.write(`Experience Shown: ${diffYears} years`);
         });
       }
-      
-        const form = new formidable.IncomingForm();
 
-        form.parse(req, function (err, fields, files) {
-          const oldpath = files.filetoupload.filepath;
-          newpath = '/files/' + files.filetoupload.originalFilename;
-          
-          // fs.rename(oldpath, newpath, function (err) {
-          //   if (err) throw err;
-          //   res.end();
-          // });
-          getEntirePage(oldpath);
-          
-        });
+      const form = new formidable.IncomingForm();
+
+      form.parse(req, function (err, fields, files) {
+        const oldpath = files.filetoupload.filepath;
+        newpath = "/files/" + files.filetoupload.originalFilename;
+
+        // fs.rename(oldpath, newpath, function (err) {
+        //   if (err) throw err;
+        //   res.end();
+        // });
+        getEntirePage(oldpath);
+      });
     } else {
       res.writeHead(200, { "Content-Type": "text/html" });
       res.write(
