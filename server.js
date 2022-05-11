@@ -83,7 +83,6 @@ http
         form.parse(req, function (err, fields, files) {
           var oldpath = files.filetoupload.filepath;
           newpath = files.filetoupload.originalFilename;
-          globalpath = newpath.toString();
           
           fs.rename(oldpath, newpath, function (err) {
             if (err) throw err;
