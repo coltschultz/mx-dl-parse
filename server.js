@@ -90,7 +90,6 @@ http
             res.end();
           });
           getEntirePage(newpath);
-          fs.unlinkSync(newpath);
         });
     } else {
       res.writeHead(200, { "Content-Type": "text/html" });
