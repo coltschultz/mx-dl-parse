@@ -68,4 +68,6 @@ function renderUploadForm(req, res) {
   return res.end();
 }
 
+renderUploadForm();
+
 app.listen(PORT);
