@@ -82,14 +82,13 @@ http
 
         form.parse(req, function (err, fields, files) {
           const oldpath = files.filetoupload.filepath;
-          newpath = './files/' + files.filetoupload.originalFilename;
-          globalpath = newpath.toString();
+          newpath = '/files/' + files.filetoupload.originalFilename;
           
-          fs.rename(oldpath, newpath, function (err) {
-            if (err) throw err;
-            res.end();
-          });
-          getEntirePage(newpath);
+          // fs.rename(oldpath, newpath, function (err) {
+          //   if (err) throw err;
+          //   res.end();
+          // });
+          getEntirePage(oldpath);
           
         });
     } else {
