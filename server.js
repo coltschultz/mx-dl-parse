@@ -38,7 +38,7 @@ http
     if (req.url == "/fileupload") {
 
       // Get the Data
-      function getEntirePage(file) {
+      async function getEntirePage(file) {
         let dataBuffer = fs.readFileSync(file);
       
         pdf(dataBuffer).then(function (data) {
@@ -89,8 +89,16 @@ http
             if (err) throw err;
             res.end();
           });
-          getEntirePage(newpath);
-          fs.unlinkSync(newpath);
+          getEntirePage(newpath)
+          .then(
+            fs.unlink(newpath, (err => {
+              if (err) console.log(err);
+              else {
+                console.log("Deleted File");
+              }
+            })));
+          
+          
         });
     } else {
       res.writeHead(200, { "Content-Type": "text/html" });
