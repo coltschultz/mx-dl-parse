@@ -18,21 +18,21 @@
   </header>
 
   <main class="container-fluid mx-auto">
-
       <div class="col-12 col-lg-6 bg-dark p-3 mb-3">
         <h3 class="text-light">Upload a License</h3>
         <form action="fileupload" method="post" enctype="multipart/form-data" id="license-form">
           <label for="license-name" class="form-label">File Upload:</label>
           <input type="file" id="license-file" class="form-input input" placeholder="Upload PDF"
             name="license-file">
-
           <input type="submit" id="submit">
         </form>
+        <form action="fileurl" method="post" enctype="multipart/form-data" id="license-form-url">
+          <label for="license-url" class="form-label">URL:</label>
+          <input type="text" id="license-url" class="form-input input" placeholder="Your URL here"
+            name="license-url">
+          <input type="submit" id="submit" class="form-input btn btn-primary">
+        </form>
       </div>
-
-    </section>
-
-
   </main>
 
   <script src="./assets/js/script.js"></script>

@@ -20,11 +20,6 @@ app.use((req, res, next) => {
   return next();
 });
 
-// Front End
-// app.get("*", (req, res) => {
-//   res.sendFile(path.join(__dirname, "./public/index.html"));
-// });
-
 app.post("/fileupload", async (req, res) => {
   logger.debug("got file upload");
   async function getEntirePage(file) {
@@ -38,6 +33,40 @@ app.post("/fileupload", async (req, res) => {
   return form.parse(req, async (err, fields, files) => {
     for (file in files) {
       pdfData = await getEntirePage(files[file].filepath);
+      await writeLicenseDetails(pdfData, req, res);
+    }
+
+    return res.end();
+  });
+});
+
+app.post("/fileurl", async (req, res) => {
+  async function getFileFromURL() {
+    logger.debug("got file url");
+    const file = fs.createWriteStream("files/new-license.pdf");
+    const request = http.get("http://www.ins-pas.com/inspas/App_Attachments/PAoAAPsr7wcCAA", function(response) {
+      response.pipe(file);
+
+      // after download completed close filestream
+      file.on("finish", () => {
+          file.close();
+          console.log("Download Completed");
+      });
+    });
+  }
+
+  async function getEntirePage(file) {
+    let dataBuffer = fs.readFileSync(file);
+
+    return await pdf(dataBuffer).then((data) => parser.parsePdf(data));
+  }
+
+  const form = new formidable.IncomingForm();
+
+  return form.parse(req, async (err, fields, files) => {
+    for (file in files) {
+      newFile = await getFileFromURL();
+      pdfData = await getEntirePage(newFile);
       await writeLicenseDetails(pdfData, req, res);
     }
 
