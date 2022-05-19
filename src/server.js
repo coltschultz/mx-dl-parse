@@ -3,9 +3,9 @@ const fs = require("fs");
 const pdf = require("pdf-parse");
 const formidable = require("formidable");
 const path = require("path");
+const https = require("https");
 const http = require("http");
 const logger = require("pino")({ level: "debug" });
-
 const parser = require("./parser");
 
 const PORT = process.env.PORT || 3011;
@@ -20,8 +20,48 @@ app.use((req, res, next) => {
   return next();
 });
 
+
+
+
 app.post("/fileupload", async (req, res) => {
   logger.debug("got file upload");
+  
+  async function getEntirePage(file) {
+    let dataBuffer = fs.readFileSync(file);
+
+    return await pdf(dataBuffer).then((data) => parser.parsePdf(data));
+  }
+
+  const form = new formidable.IncomingForm();
+
+  return async () => {
+    
+      pdfData = await getEntirePage(files[file].filepath);
+      await writeLicenseDetails(pdfData, req, res);
+    
+
+    return res.end();
+  };
+});
+
+async function getFile() {
+  const file = fs.createWriteStream("files/newLicense.pdf");
+  const request = https.get("https://southernstarmga.com/sample.pdf", function(response) {
+    response.pipe(file);
+
+    // after download completed close filestream
+    file.on("finish", () => {
+        file.close();
+        console.log("Download Completed");
+    });
+  });
+}
+
+app.post("/fileurl", async (req, res) => {
+
+  await getFile();
+  logger.debug("got file upload");
+
   async function getEntirePage(file) {
     let dataBuffer = fs.readFileSync(file);
 
@@ -40,39 +80,8 @@ app.post("/fileupload", async (req, res) => {
   });
 });
 
-app.post("/fileurl", async (req, res) => {
-  async function getFileFromURL() {
-    logger.debug("got file url");
-    const file = fs.createWriteStream("files/new-license.pdf");
-    const request = http.get("http://www.ins-pas.com/inspas/App_Attachments/PAoAAPsr7wcCAA", function(response) {
-      response.pipe(file);
 
-      // after download completed close filestream
-      file.on("finish", () => {
-          file.close();
-          console.log("Download Completed");
-      });
-    });
-  }
 
-  async function getEntirePage(file) {
-    let dataBuffer = fs.readFileSync(file);
-
-    return await pdf(dataBuffer).then((data) => parser.parsePdf(data));
-  }
-
-  const form = new formidable.IncomingForm();
-
-  return form.parse(req, async (err, fields, files) => {
-    for (file in files) {
-      newFile = await getFileFromURL();
-      pdfData = await getEntirePage(newFile);
-      await writeLicenseDetails(pdfData, req, res);
-    }
-
-    return res.end();
-  });
-});
 
 function writeLicenseDetails(data, req, res) {
   res.writeHead(200, { "Content-Type": "text/html" });
@@ -96,5 +105,6 @@ function renderUploadForm(req, res) {
   res.write("</form>");
   return res.end();
 }
+
 
 app.listen(PORT);
