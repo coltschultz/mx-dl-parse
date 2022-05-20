@@ -70,7 +70,7 @@ app.post("/fileurl", async (req, res) => {
   });
 });
 
-
+// API Route to get file from URL
 app.post("/api/fileurl", async (req, res) => {
   return new Promise((resolve) => {
     const URL = req.params.URL;
@@ -110,29 +110,6 @@ function writeLicenseDetails(data, req, res) {
   res.write(`Date Issued: ${data.issueDate}`);
   res.write("<br>");
   res.write(`Experience Shown: ${data.diffYears} years`);
-}
-
-function sendLicenseDetails(data) {
-  res.sendHead(200, { "Content-Type": "text/html" });
-  res.send(`Name: ${data.name}`);
-  res.send("<br>");
-  res.send(`License Number: ${data.license}`);
-  res.send("<br>");
-  res.send(`Date Issued: ${data.issueDate}`);
-  res.send("<br>");
-  res.send(`Experience Shown: ${data.diffYears} years`);
-}
-
-// @TODO remove
-function renderUploadForm(req, res) {
-  res.writeHead(200, { "Content-Type": "text/html" });
-  res.write(
-    '<form action="fileupload" method="post" enctype="multipart/form-data">'
-  );
-  res.write('<input type="file" name="filetoupload"><br>');
-  res.write('<input type="submit">');
-  res.write("</form>");
-  return res.end();
 }
 
 app.listen(PORT);
