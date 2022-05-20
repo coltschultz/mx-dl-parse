@@ -20,48 +20,8 @@ app.use((req, res, next) => {
   return next();
 });
 
-
-
-
 app.post("/fileupload", async (req, res) => {
   logger.debug("got file upload");
-  
-  async function getEntirePage(file) {
-    let dataBuffer = fs.readFileSync(file);
-
-    return await pdf(dataBuffer).then((data) => parser.parsePdf(data));
-  }
-
-  const form = new formidable.IncomingForm();
-
-  return async () => {
-    
-      pdfData = await getEntirePage(files[file].filepath);
-      await writeLicenseDetails(pdfData, req, res);
-    
-
-    return res.end();
-  };
-});
-
-async function getFile() {
-  const file = fs.createWriteStream("files/newLicense.pdf");
-  const request = https.get("https://southernstarmga.com/sample.pdf", function(response) {
-    response.pipe(file);
-
-    // after download completed close filestream
-    file.on("finish", () => {
-        file.close();
-        console.log("Download Completed");
-    });
-  });
-}
-
-app.post("/fileurl", async (req, res) => {
-
-  await getFile();
-  logger.debug("got file upload");
-
   async function getEntirePage(file) {
     let dataBuffer = fs.readFileSync(file);
 
@@ -80,8 +40,66 @@ app.post("/fileurl", async (req, res) => {
   });
 });
 
+// @TODO - add formidable 
+app.post("/fileurl", async (req, res) => {
+  return new Promise((resolve) => {
+    const file = fs.createWriteStream("files/newLicense.pdf");
+    const request = https.get(
+      "https://southernstarmga.com/sample.pdf",
+      function (response) {
+        response.pipe(file);
+
+        // after download completed close filestream
+        file.on("finish", () => {
+          resolve(request.response);
+          file.close();
+          console.log("Download Complete");
+        });
+      }
+    );
+  }).then(async (results) => {
+    async function getEntirePage(file) {
+      let dataBuffer = fs.readFileSync(file);
+
+      return await pdf(dataBuffer).then((data) => parser.parsePdf(data));
+    }
+
+    pdfData = await getEntirePage("files/newLicense.pdf");
+    await writeLicenseDetails(pdfData, req, res);
+    return res.end();
+  });
+});
 
 
+app.post("/api/fileurl", async (req, res) => {
+  return new Promise((resolve) => {
+    const URL = req.params.URL;
+    const file = fs.createWriteStream("files/newLicense.pdf");
+    const request = https.get(
+      "https://southernstarmga.com/sample.pdf",
+      function (response) {
+        response.pipe(file);
+
+        // after download completed close filestream
+        file.on("finish", () => {
+          resolve(request.response);
+          file.close();
+          console.log("Download Complete");
+        });
+      }
+    );
+  }).then(async (results) => {
+    async function getEntirePage(file) {
+      let dataBuffer = fs.readFileSync(file);
+
+      return await pdf(dataBuffer).then((data) => parser.parsePdf(data));
+    }
+
+    pdfData = await getEntirePage("files/newLicense.pdf");
+    await writeLicenseDetails(pdfData, req, res);
+    return res.end();
+  });
+});
 
 function writeLicenseDetails(data, req, res) {
   res.writeHead(200, { "Content-Type": "text/html" });
@@ -92,6 +110,17 @@ function writeLicenseDetails(data, req, res) {
   res.write(`Date Issued: ${data.issueDate}`);
   res.write("<br>");
   res.write(`Experience Shown: ${data.diffYears} years`);
+}
+
+function sendLicenseDetails(data) {
+  res.sendHead(200, { "Content-Type": "text/html" });
+  res.send(`Name: ${data.name}`);
+  res.send("<br>");
+  res.send(`License Number: ${data.license}`);
+  res.send("<br>");
+  res.send(`Date Issued: ${data.issueDate}`);
+  res.send("<br>");
+  res.send(`Experience Shown: ${data.diffYears} years`);
 }
 
 // @TODO remove
@@ -105,6 +134,5 @@ function renderUploadForm(req, res) {
   res.write("</form>");
   return res.end();
 }
-
 
 app.listen(PORT);

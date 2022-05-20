@@ -12,6 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "download": "^8.0.0",
+    "download-pdf": "^0.1.6",
     "express": "^4.17.1",
     "formidable": "^2.0.1",
     "pdf-parse": "^1.1.1",

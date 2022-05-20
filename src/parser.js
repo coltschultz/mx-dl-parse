@@ -3,7 +3,7 @@ module.exports.parsePdf = (data) => {
 
   const curp = dataText.search(/CURP:/);
   const licenseFirst = dataText.search(/Número de Licencia:/);
-  const marker = dataText.search(/DIGITAL DE CONDUCTOR/) + 18;
+  const marker = dataText.search(/DIGITAL DE CONDUCTOR/) + 19;
   const fecha = dataText.search(/Fecha y hora/);
   const antig = dataText.search(/Antigüedad:/);
 
